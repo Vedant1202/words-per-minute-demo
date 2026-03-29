@@ -1,38 +1,14 @@
-import { useLayoutEffect, useRef, type ComponentPropsWithoutRef } from "react";
+import { useCallback, useLayoutEffect, useRef } from "react";
 import { useTypingTest, DURATION_SEC } from "../hooks/useTypingTest";
+
+/** Minimum visible rows for the typing textarea (expanded by layout effect). */
+export const MIN_TYPING_TEXTAREA_ROWS = 3;
 
 function formatTime(seconds: number): string {
   const s = Math.ceil(seconds);
   const m = Math.floor(s / 60);
   const r = s % 60;
   return `${m}:${r.toString().padStart(2, "0")}`;
-}
-
-type AutoGrowTextareaProps = ComponentPropsWithoutRef<"textarea">;
-
-function AutoGrowTextarea({
-  value,
-  className = "",
-  ...rest
-}: AutoGrowTextareaProps) {
-  const ref = useRef<HTMLTextAreaElement>(null);
-
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    el.style.height = "auto";
-    el.style.height = `${el.scrollHeight}px`;
-  }, [value]);
-
-  return (
-    <textarea
-      ref={ref}
-      rows={1}
-      value={value}
-      className={className}
-      {...rest}
-    />
-  );
 }
 
 export function TypingTest() {
@@ -77,7 +53,7 @@ export function TypingTest() {
       )}
 
       <div className="card bg-base-200 shadow-md">
-        <div className="card-body min-w-0 gap-4">
+        <div className="card-body gap-4">
           <h2 className="card-title text-lg">Type this</h2>
           {loadingParagraph ? (
             <div className="flex flex-col gap-2">
@@ -92,10 +68,17 @@ export function TypingTest() {
             <p className="text-base-content/60">No paragraph loaded.</p>
           )}
 
-          <label className="form-control w-full min-w-0">
+          <label className="form-control w-full">
             <span className="label-text mb-1">Your typing</span>
-            <AutoGrowTextarea
-              className="textarea-bordered textarea min-h-24 w-full min-w-0 font-mono text-base overflow-y-hidden resize-none"
+            <TypingTextarea
+              value={input}
+              onChange={onInputChange}
+              disabled={
+                loadingParagraph ||
+                !paragraph ||
+                phase === "done" ||
+                !!loadError
+              }
               placeholder={
                 loadingParagraph || !paragraph
                   ? "Wait for paragraph…"
@@ -103,18 +86,6 @@ export function TypingTest() {
                     ? "Session complete"
                     : "Start typing…"
               }
-              value={input}
-              onChange={(e) => onInputChange(e.target.value)}
-              disabled={
-                loadingParagraph ||
-                !paragraph ||
-                phase === "done" ||
-                !!loadError
-              }
-              aria-label="Typing area"
-              spellCheck={false}
-              autoComplete="off"
-              autoCorrect="off"
             />
           </label>
 
@@ -237,7 +208,7 @@ export function ParagraphPreview({
   const chars = target.split("");
   return (
     <p
-      className="rounded-box border border-base-300 bg-base-100 p-4 font-mono text-base leading-relaxed [overflow-wrap:anywhere] min-w-0 w-full"
+      className="max-w-full break-words rounded-box border border-base-300 bg-base-100 p-4 font-mono text-base leading-relaxed"
       aria-live="polite"
     >
       {chars.map((ch, i) => {
@@ -249,10 +220,70 @@ export function ParagraphPreview({
         }
         return (
           <span key={i} className={cls}>
-            {ch === " " ? " " : ch}
+            {ch}
           </span>
         );
       })}
     </p>
+  );
+}
+
+function TypingTextarea({
+  value,
+  onChange,
+  disabled,
+  placeholder,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  disabled: boolean;
+  placeholder: string;
+}) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  const syncRows = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.rows = 1;
+    const lineHeightPx = parseFloat(getComputedStyle(el).lineHeight);
+    if (!Number.isFinite(lineHeightPx) || lineHeightPx <= 0) {
+      el.rows = MIN_TYPING_TEXTAREA_ROWS;
+      return;
+    }
+    const nextRows = Math.max(
+      MIN_TYPING_TEXTAREA_ROWS,
+      Math.ceil(el.scrollHeight / lineHeightPx)
+    );
+    el.rows = nextRows;
+  }, []);
+
+  useLayoutEffect(() => {
+    syncRows();
+    const el = ref.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => {
+      syncRows();
+    });
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+    };
+  }, [value, syncRows]);
+
+  return (
+    <textarea
+      ref={ref}
+      data-testid="typing-textarea"
+      rows={MIN_TYPING_TEXTAREA_ROWS}
+      className="textarea-bordered textarea max-h-none w-full resize-none overflow-hidden font-mono text-base leading-normal"
+      placeholder={placeholder}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      disabled={disabled}
+      aria-label="Typing area"
+      spellCheck={false}
+      autoComplete="off"
+      autoCorrect="off"
+    />
   );
 }
