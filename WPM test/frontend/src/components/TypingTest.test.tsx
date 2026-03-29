@@ -113,4 +113,30 @@ describe("TypingTest", () => {
       );
     }
   });
+
+  it("places WPM over time section above Previous results", () => {
+    mockUseTypingTest.mockImplementation(() =>
+      baseMock({
+        pastResults: [
+          {
+            id: "r1",
+            wpm: 40,
+            accuracy: 96,
+            charactersTyped: 180,
+            durationSeconds: 60,
+            completedAt: "2026-03-28T12:00:00.000Z",
+          },
+        ],
+      })
+    );
+    render(<TypingTest />);
+    const wpmHeading = screen.getByRole("heading", { name: "WPM over time" });
+    const prevHeading = screen.getByRole("heading", {
+      name: "Previous results",
+    });
+    expect(
+      wpmHeading.compareDocumentPosition(prevHeading) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+  });
 });

@@ -1,5 +1,6 @@
 import { useCallback, useLayoutEffect, useRef } from "react";
 import { useTypingTest, DURATION_SEC } from "../hooks/useTypingTest";
+import { WpmHistoryChart } from "./WpmHistoryChart";
 
 /** Minimum visible rows for the typing textarea (expanded by layout effect). */
 export const MIN_TYPING_TEXTAREA_ROWS = 3;
@@ -154,6 +155,13 @@ export function TypingTest() {
           </div>
         </div>
       )}
+
+      <div className="card bg-base-200 shadow-md">
+        <div className="card-body gap-3">
+          <h2 className="card-title text-lg">WPM over time</h2>
+          <WpmHistoryChart pastResults={pastResults} />
+        </div>
+      </div>
 
       <div className="card bg-base-200 shadow-md">
         <div className="card-body">
