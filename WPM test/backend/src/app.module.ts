@@ -7,3 +7,4 @@ import { ResultsModule } from './results/results.module';
   imports: [ParagraphsModule, PersonalBestModule, ResultsModule],
 })
 export class AppModule {}
+
