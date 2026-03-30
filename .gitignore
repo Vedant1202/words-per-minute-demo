@@ -1,0 +1,60 @@
+# dependencies
+node_modules/
+
+# production
+dist/
+build/
+
+# coverage
+coverage/
+.nyc_output/
+
+# logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# env files
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# TypeScript
+*.tsbuildinfo
+
+# NestJS
+*.pid
+*.seed
+
+# Vite
+vite.config.ts.timestamp-*
+
+# testing
+playwright-report/
+test-results/
+
+# cache
+.cache/
+.tmp/
+.temp/
+
+# Cursor / AI tooling
+.cursor/
+.cursor-cache/
+
+# misc
+*.local
+blog-res/
