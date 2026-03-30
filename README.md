@@ -1,7 +1,10 @@
 # My Cursor setup
 
 Personal workspace for a Cursor-focused blog and a small full-stack demo used in those posts.
-[Watch the demo video](./demo.mp4)
+
+## Demo
+
+[Watch the demo video](https://drive.google.com/file/d/122JlDc89WwQNvhpzpN1FUbeITlrPRLkO/view?usp=sharing)
 
 ## Contents
 
