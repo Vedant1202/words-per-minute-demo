@@ -2,6 +2,8 @@
 
 Personal workspace for a Cursor-focused blog and a small full-stack demo used in those posts.
 
+### Read the blog here - [The un-overcomplicated Cursor workflows I use Day to Day (as an early-mid career software engineer)](https://my-daily-cursor-workflows.hashnode.dev/the-un-overcomplicated-cursor-workflows-i-use-day-to-day-as-an-early-mid-career-software-engineer)
+
 ## Demo
 
 [Watch the demo video](https://drive.google.com/file/d/122JlDc89WwQNvhpzpN1FUbeITlrPRLkO/view?usp=sharing)
