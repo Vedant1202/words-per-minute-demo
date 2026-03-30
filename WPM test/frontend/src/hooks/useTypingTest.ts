@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  fetchPersonalBest,
   fetchRandomParagraph,
   fetchResults,
+  submitPersonalBest,
   submitResult,
 } from "../api/client";
 import type { ParagraphResponse, StoredResult } from "../types/api";
@@ -34,6 +36,9 @@ export function useTypingTest() {
   const [resultsError, setResultsError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [personalBestResultId, setPersonalBestResultId] = useState<
+    string | null
+  >(null);
 
   const [finalSummary, setFinalSummary] = useState<{
     wpm: number;
@@ -70,10 +75,21 @@ export function useTypingTest() {
     }
   }, []);
 
+  const loadPersonalBest = useCallback(async () => {
+    try {
+      const { personalBest } = await fetchPersonalBest();
+      setPersonalBestResultId(personalBest?.resultId ?? null);
+    } catch {
+      // Keep results UX resilient: this endpoint is supplemental for highlighting.
+      setPersonalBestResultId(null);
+    }
+  }, []);
+
   useEffect(() => {
     void loadParagraph();
     void loadResults();
-  }, [loadParagraph, loadResults]);
+    void loadPersonalBest();
+  }, [loadParagraph, loadResults, loadPersonalBest]);
 
   const targetText = paragraph?.text ?? "";
 
@@ -126,6 +142,18 @@ export function useTypingTest() {
           durationSeconds: DURATION_SEC,
           completedAt: new Date().toISOString(),
         })
+          .then((savedResult) =>
+            submitPersonalBest({
+              resultId: savedResult.id,
+              wpm: savedResult.wpm,
+              accuracy: savedResult.accuracy,
+              charactersTyped: savedResult.charactersTyped,
+              durationSeconds: savedResult.durationSeconds,
+              completedAt: savedResult.completedAt,
+            }).then((pb) => {
+              setPersonalBestResultId(pb.current?.resultId ?? null);
+            })
+          )
           .then(() => loadResults())
           .catch(() => setSubmitError("Failed to save result"))
           .finally(() => setSubmitting(false));
@@ -174,6 +202,7 @@ export function useTypingTest() {
     submitError,
     pastResults,
     resultsError,
+    personalBestResultId,
     restart,
     reloadResults: loadResults,
   };

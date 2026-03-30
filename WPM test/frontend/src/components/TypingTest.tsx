@@ -29,6 +29,7 @@ export function TypingTest() {
     submitError,
     pastResults,
     resultsError,
+    personalBestResultId,
     restart,
   } = useTypingTest();
 
@@ -188,7 +189,20 @@ export function TypingTest() {
                 <tbody>
                   {pastResults.map((r) => (
                     <tr key={r.id}>
-                      <td className="tabular-nums">{r.wpm}</td>
+                      <td className="tabular-nums">
+                        <span className="inline-flex items-center gap-1">
+                          {r.wpm}
+                          {personalBestResultId === r.id && (
+                            <span
+                              className="tooltip tooltip-top cursor-help"
+                              data-tip="This is your personal best"
+                              aria-label="Personal best"
+                            >
+                              <span aria-hidden="true">⭐</span>
+                            </span>
+                          )}
+                        </span>
+                      </td>
                       <td className="tabular-nums">{r.accuracy}%</td>
                       <td className="tabular-nums">{r.charactersTyped}</td>
                       <td className="tabular-nums">{r.durationSeconds}s</td>

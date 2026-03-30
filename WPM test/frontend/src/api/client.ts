@@ -1,6 +1,8 @@
 import type {
+  CreatePersonalBestPayload,
   CreateResultPayload,
   ParagraphResponse,
+  PersonalBest,
   StoredResult,
 } from "../types/api";
 
@@ -30,4 +32,27 @@ export async function submitResult(
   });
   if (!res.ok) throw new Error(`Could not save result (${res.status})`);
   return res.json() as Promise<StoredResult>;
+}
+
+export async function fetchPersonalBest(): Promise<{
+  personalBest: PersonalBest | null;
+}> {
+  const res = await fetch(`${baseUrl}/personal-best`);
+  if (!res.ok) throw new Error(`Could not load personal best (${res.status})`);
+  return res.json() as Promise<{ personalBest: PersonalBest | null }>;
+}
+
+export async function submitPersonalBest(
+  payload: CreatePersonalBestPayload
+): Promise<{ current: PersonalBest | null; improved: boolean }> {
+  const res = await fetch(`${baseUrl}/personal-best`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`Could not save personal best (${res.status})`);
+  return res.json() as Promise<{
+    current: PersonalBest | null;
+    improved: boolean;
+  }>;
 }

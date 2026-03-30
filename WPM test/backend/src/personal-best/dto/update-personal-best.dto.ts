@@ -1,6 +1,17 @@
-import { IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
+import {
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Max,
+  Min,
+} from 'class-validator';
 
 export class UpdatePersonalBestDto {
+  @IsOptional()
+  @IsUUID()
+  resultId?: string;
+
   @IsOptional()
   @IsNumber()
   @Min(0)

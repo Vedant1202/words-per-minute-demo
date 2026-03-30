@@ -18,6 +18,7 @@ export class PersonalBestRepository extends PersonalBestRepositoryPort {
     }
     this.best = {
       id: randomUUID(),
+      resultId: dto.resultId,
       wpm: dto.wpm,
       accuracy: dto.accuracy,
       charactersTyped: dto.charactersTyped,

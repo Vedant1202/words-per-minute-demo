@@ -62,4 +62,63 @@ describe('WPM API (e2e)', () => {
     expect(list.body.results.length).toBeGreaterThanOrEqual(1);
     expect(list.body.results[0].wpm).toBe(42);
   });
+
+  it('POST /personal-best tracks best by resultId', async () => {
+    const firstResult = await request(app.getHttpServer())
+      .post('/results')
+      .send({
+        wpm: 45,
+        accuracy: 96.4,
+        charactersTyped: 210,
+        durationSeconds: 60,
+        completedAt: new Date().toISOString(),
+      })
+      .expect(201);
+
+    const firstPb = await request(app.getHttpServer())
+      .post('/personal-best')
+      .send({
+        resultId: firstResult.body.id,
+        wpm: firstResult.body.wpm,
+        accuracy: firstResult.body.accuracy,
+        charactersTyped: firstResult.body.charactersTyped,
+        durationSeconds: firstResult.body.durationSeconds,
+        completedAt: firstResult.body.completedAt,
+      })
+      .expect(201);
+
+    expect(firstPb.body.improved).toBe(true);
+    expect(firstPb.body.current.resultId).toBe(firstResult.body.id);
+
+    const worseResult = await request(app.getHttpServer())
+      .post('/results')
+      .send({
+        wpm: 40,
+        accuracy: 99.9,
+        charactersTyped: 190,
+        durationSeconds: 60,
+        completedAt: new Date().toISOString(),
+      })
+      .expect(201);
+
+    const secondPb = await request(app.getHttpServer())
+      .post('/personal-best')
+      .send({
+        resultId: worseResult.body.id,
+        wpm: worseResult.body.wpm,
+        accuracy: worseResult.body.accuracy,
+        charactersTyped: worseResult.body.charactersTyped,
+        durationSeconds: worseResult.body.durationSeconds,
+        completedAt: worseResult.body.completedAt,
+      })
+      .expect(201);
+
+    expect(secondPb.body.improved).toBe(false);
+    expect(secondPb.body.current.resultId).toBe(firstResult.body.id);
+
+    const current = await request(app.getHttpServer())
+      .get('/personal-best')
+      .expect(200);
+    expect(current.body.personalBest.resultId).toBe(firstResult.body.id);
+  });
 });

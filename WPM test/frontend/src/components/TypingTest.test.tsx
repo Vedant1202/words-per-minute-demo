@@ -24,6 +24,7 @@ function baseMock(overrides: Partial<HookReturn> = {}): HookReturn {
     submitError: null,
     pastResults: [],
     resultsError: null,
+    personalBestResultId: null,
     restart: vi.fn(),
     reloadResults: vi.fn(),
   };
@@ -138,5 +139,26 @@ describe("TypingTest", () => {
       wpmHeading.compareDocumentPosition(prevHeading) &
         Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy();
+  });
+
+  it("shows personal best star and tooltip affordance on matching row", () => {
+    mockUseTypingTest.mockImplementation(() =>
+      baseMock({
+        pastResults: [
+          {
+            id: "r1",
+            wpm: 52,
+            accuracy: 97.4,
+            charactersTyped: 240,
+            durationSeconds: 60,
+            completedAt: "2026-03-28T12:00:00.000Z",
+          },
+        ],
+        personalBestResultId: "r1",
+      })
+    );
+    render(<TypingTest />);
+    expect(screen.getByLabelText("Personal best")).toBeInTheDocument();
+    expect(screen.getByText("⭐")).toBeInTheDocument();
   });
 });

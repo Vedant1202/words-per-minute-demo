@@ -12,7 +12,26 @@ export interface StoredResult {
   completedAt?: string;
 }
 
+export interface PersonalBest {
+  id: string;
+  resultId: string;
+  wpm: number;
+  accuracy: number;
+  charactersTyped: number;
+  durationSeconds: number;
+  completedAt: string;
+}
+
 export interface CreateResultPayload {
+  wpm: number;
+  accuracy: number;
+  charactersTyped: number;
+  durationSeconds: number;
+  completedAt?: string;
+}
+
+export interface CreatePersonalBestPayload {
+  resultId: string;
   wpm: number;
   accuracy: number;
   charactersTyped: number;

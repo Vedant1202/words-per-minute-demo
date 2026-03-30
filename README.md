@@ -8,6 +8,7 @@ Personal workspace for a Cursor-focused blog and a small full-stack demo used in
 | ------------------ | ------------------------------------------------------------------------------ |
 | `WPM test/`        | Typing-speed (WPM) app: **Vite + React + TypeScript** frontend, **NestJS** API |
 | `project-setup.md` | Original brief: stack, flows, backend/frontend expectations                    |
+| `demo.mp4`         | Short demo recording of the project behavior                                   |
 | `blog-res/`        | Draft assets and screenshots for posts                                         |
 | `.cursor/rules/`   | Cursor rules (e.g. NestJS feature scaffold for `/nestjs-feature`)              |
 
